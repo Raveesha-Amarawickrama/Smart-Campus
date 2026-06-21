@@ -1,0 +1,7 @@
+[
+  { "id": "s1", "course": "Advanced Data Structures", "room": "Hall 302", "dept": "Software Engineering",     "time": "09:00 AM", "end": "10:30 AM", "day": "Mon,Wed,Fri" },
+  { "id": "s2", "course": "Cloud Computing",        "room": "Hall B",   "dept": "Software Engineering", "time": "11:30 AM", "end": "01:00 PM", "day": "Mon,Wed,Fri" },
+  { "id": "s3", "course": "Software Metrics",         "room": "Room 101", "dept": "Software Engineering",  "time": "02:45 PM", "end": "04:00 PM", "day": "Tue,Thu" },
+  { "id": "s4", "course": "Mobile Development",   "room": "Lab 204",  "dept": "Software Engineering",   "time": "09:00 AM", "end": "10:30 AM", "day": "Tue,Thu" },
+  { "id": "s5", "course": "Software Evaluation",        "room": "Room 110", "dept": "Software Engineering",   "time": "11:00 AM", "end": "12:30 PM", "day": "Mon,Wed,Fri" }
+]
