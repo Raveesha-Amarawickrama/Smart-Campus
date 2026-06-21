@@ -116,7 +116,7 @@ export function CreditsPage() {
 
             <div style={{marginTop:12,background:'rgba(214,158,46,.18)',border:'1px solid rgba(214,158,46,.35)',borderRadius:12,padding:'10px 14px',fontSize:13}}>
               <div style={{fontWeight:800,marginBottom:2}}>🎓 Graduation Path</div>
-              <div style={{opacity:.85}}>On track to graduate by Spring 2026.</div>
+              <div style={{opacity:.85}}>On track to graduate by  2027.</div>
             </div>
           </div>
         </div>
