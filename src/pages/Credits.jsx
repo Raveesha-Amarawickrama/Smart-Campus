@@ -36,7 +36,12 @@ function Donut({ pct, size = 82, stroke = 8 }) {
 }
 
 export function CreditsPage() {
-  const { courses, saveCourses, toast } = useApp();
+  // ← destructuring default: even if context gives undefined, we get []
+  const { courses: rawCourses = [], saveCourses, toast } = useApp();
+
+  // ← runtime guard: ensure it's always an array, never null/undefined
+  const courses = Array.isArray(rawCourses) ? rawCourses : [];
+
   const [modal,   setModal]   = useState(null);
   const [addSem,  setAddSem]  = useState(false);
   const [semName, setSemName] = useState('');
@@ -44,7 +49,7 @@ export function CreditsPage() {
   const gpa   = calcGPA(courses);
   const total = calcTotalCredits(courses);
   const pct   = Math.min(100, Math.round((total / REQUIRED) * 100));
-  const all   = courses.flatMap((s) => s.courses);
+  const all   = courses.flatMap((s) => Array.isArray(s.courses) ? s.courses : []);
 
   const major    = all.filter((c) => c.type.includes('Major')).reduce((s, c) => s + c.credits, 0);
   const elective = all.filter((c) => c.type === 'Elective').reduce((s, c) => s + c.credits, 0);
@@ -83,10 +88,8 @@ export function CreditsPage() {
   };
 
   return (
-    <div className="page">
+    <>
       <div className="pg">
-
-      
         <div className="navy-card cr-hero-card">
           <div className="cr-hero-inner">
             <div className="cr-top-row">
@@ -165,7 +168,10 @@ export function CreditsPage() {
               <span className="sem-lbl">{sem.semester}</span>
               <div className="cr-sem-hdr-right">
                 <span className="sem-cred">{sem.credits} credits</span>
-                <button onClick={() => setModal({ type: 'add', semIdx: si })} style={{ color: 'var(--teal)', display: 'flex', alignItems: 'center', minHeight: 44, minWidth: 44, justifyContent: 'center' }}>
+                <button
+                  onClick={() => setModal({ type: 'add', semIdx: si })}
+                  style={{ color: 'var(--teal)', display: 'flex', alignItems: 'center', minHeight: 44, minWidth: 44, justifyContent: 'center' }}
+                >
                   <Icon name="plus" size={18} />
                 </button>
               </div>
@@ -179,7 +185,12 @@ export function CreditsPage() {
                 </button>
               </div>
             ) : sem.courses.map((c, ci) => (
-              <div key={c.id} className="course-row" style={{ cursor: 'pointer' }} onClick={() => setModal({ type: 'edit', semIdx: si, courseIdx: ci, data: c })}>
+              <div
+                key={c.id}
+                className="course-row"
+                style={{ cursor: 'pointer' }}
+                onClick={() => setModal({ type: 'edit', semIdx: si, courseIdx: ci, data: c })}
+              >
                 <div className="cr-course-info">
                   <div className="cr-course-name">{c.name}</div>
                   <div className="cr-course-meta">
@@ -208,7 +219,7 @@ export function CreditsPage() {
           onClose={() => setModal(null)}
         />
       )}
-    </div>
+    </>
   );
 }
 

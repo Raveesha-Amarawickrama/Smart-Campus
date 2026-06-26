@@ -4,37 +4,43 @@ import { DEFAULT_ASSIGNMENTS, DEFAULT_COURSES, DEFAULT_SCHEDULE } from './data/d
 
 const AppCtx = createContext(null);
 
+// ── helpers ──────────────────────────────────────────────────────────────────
+const safeArray = (val, fallback) => (Array.isArray(val) ? val : fallback);
+
 export function AppProvider({ children }) {
-  const [user,            setUserState]      = useState(null);
-  const [assignments,     setAssignments]    = useState([]);
-  const [courses,         setCourses]        = useState([]);
-  const [schedule,        setSchedule]       = useState([]);
+  const [user,            setUserState]       = useState(null);
+  const [assignments,     setAssignments]     = useState([]);
+  const [courses,         setCourses]         = useState([]);
+  const [schedule,        setSchedule]        = useState([]);
   const [scheduleLoading, setScheduleLoading] = useState(true);
   const [scheduleError,   setScheduleError]   = useState(null);
-  const [notes,           setNotes]          = useState([]);
-  const [settings,        setSettings]       = useState({ notifications: true, darkMode: false });
-  const [notifications,   setNotifications]  = useState([]);
-  const [toasts,          setToasts]         = useState([]);
+  const [notes,           setNotes]           = useState([]);
+  const [settings,        setSettings]        = useState({ notifications: true, darkMode: false });
+  const [notifications,   setNotifications]   = useState([]);
+  const [toasts,          setToasts]          = useState([]);
+  const [page,            setPage]            = useState('landing');
+  const [loading,         setLoading]         = useState(true);
 
-  const [page,            setPage]           = useState('landing');
-  const [loading,         setLoading]        = useState(true);
-
- 
+  // ── bootstrap from localStorage ──────────────────────────────────────────
   useEffect(() => {
     const u = storage.get(KEYS.USER);
-    if (u) {
-      setUserState(u);
-      
-    }
-    setAssignments(storage.get(KEYS.ASSIGNMENTS, DEFAULT_ASSIGNMENTS));
-    setCourses(storage.get(KEYS.COURSES, DEFAULT_COURSES));
-    setNotes(storage.get(KEYS.NOTES, []));
-    setSettings(storage.get(KEYS.SETTINGS, { notifications: true, darkMode: false }));
-    setNotifications(storage.get(KEYS.NOTIFS, []));
+    if (u) setUserState(u);
+
+    // safeArray ensures a corrupt/null stored value never replaces the default
+    setAssignments(safeArray(storage.get(KEYS.ASSIGNMENTS), DEFAULT_ASSIGNMENTS));
+    setCourses    (safeArray(storage.get(KEYS.COURSES),     DEFAULT_COURSES));
+    setNotes      (safeArray(storage.get(KEYS.NOTES),       []));
+
+    const savedSettings = storage.get(KEYS.SETTINGS);
+    setSettings(savedSettings && typeof savedSettings === 'object'
+      ? savedSettings
+      : { notifications: true, darkMode: false });
+
+    setNotifications(safeArray(storage.get(KEYS.NOTIFS), []));
     setLoading(false);
   }, []);
 
-  
+  // ── schedule fetch ────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
 
@@ -46,13 +52,12 @@ export function AppProvider({ children }) {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (cancelled) return;
-        setSchedule(data);
+        setSchedule(Array.isArray(data) ? data : DEFAULT_SCHEDULE);
         storage.set(KEYS.SCHEDULE, data);
       } catch (err) {
         if (cancelled) return;
         console.warn('[Schedule] Fetch failed, using cached/default data:', err.message);
-        const cached = storage.get(KEYS.SCHEDULE, DEFAULT_SCHEDULE);
-        setSchedule(cached);
+        setSchedule(safeArray(storage.get(KEYS.SCHEDULE), DEFAULT_SCHEDULE));
         setScheduleError('Could not refresh schedule — showing saved data.');
       } finally {
         if (!cancelled) setScheduleLoading(false);
@@ -63,7 +68,7 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, []);
 
-  
+  // ── save helpers ──────────────────────────────────────────────────────────
   const saveUser = useCallback((u) => {
     storage.set(KEYS.USER, u);
     setUserState(u);
@@ -114,7 +119,7 @@ export function AppProvider({ children }) {
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }, []);
 
- 
+  // ── push notifications ────────────────────────────────────────────────────
   useEffect(() => {
     if (!user || !settings.notifications) return;
     if (!('Notification' in window)) return;
@@ -148,6 +153,7 @@ export function AppProvider({ children }) {
     return () => clearInterval(interval);
   }, [user, assignments, settings.notifications]);
 
+  // ── logout ────────────────────────────────────────────────────────────────
   const logout = useCallback(() => {
     storage.remove(KEYS.USER);
     setUserState(null);

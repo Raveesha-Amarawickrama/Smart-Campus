@@ -67,7 +67,7 @@ export function AssignmentsPage() {
   };
 
   return (
-    <div className="page">
+    <>
       <div className="pg">
         <div className="pg-ttl">Assignments</div>
         <div className="pg-sub" style={{ marginBottom: 10 }}>Manage your coursework and deadlines.</div>
@@ -146,7 +146,7 @@ export function AssignmentsPage() {
           onClose={() => setModal(null)}
         />
       )}
-    </div>
+    </>
   );
 }
 

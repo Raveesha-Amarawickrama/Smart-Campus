@@ -29,13 +29,17 @@
 
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
+html {
+  height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+}
 body {
+  width: 100%;
+  height: 100dvh;
+  overflow-x: hidden;
   font-family: var(--font);
   background: var(--bg);
   color: var(--t1);
-  min-height: 100dvh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
@@ -43,22 +47,28 @@ input, select, textarea { font-family: inherit; }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 ul { list-style: none; }
-#root { display: flex; flex-direction: column; min-height: 100dvh; }
+#root { display: flex; flex-direction: column; width: 100%; height: 100dvh; }
 
 .app-shell {
   display: flex; flex-direction: column;
-  min-height: 100dvh; max-width: 430px; margin: 0 auto;
-  background: var(--bg); position: relative; overflow-x: hidden;
+  /* width:100% is critical — without it, margin:0 auto inside a flex-column
+     parent overrides align-self:stretch, shrinking the shell to content width */
+  width: 100%; max-width: 430px;
+  height: 100dvh; margin: 0 auto;
+  background: var(--bg); position: relative; overflow: hidden;
 }
 @media (min-width: 430px) { .app-shell { box-shadow: 0 0 80px rgba(0,0,0,.2); } }
 
 .page {
-  flex: 1; padding-top: var(--hdr-h);
+  flex: 1; min-height: 0;
+  padding-top: var(--hdr-h);
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+  scrollbar-width: none;
 }
-.pg { padding: 6px 14px 28px; overflow-x: hidden; width: 100%; box-sizing: border-box; max-width: 100%; min-width: 0; }
+.page::-webkit-scrollbar { display: none; }
+.pg { padding: 6px 14px 28px; width: 100%; box-sizing: border-box; }
 
 
 .top-hdr {
@@ -516,9 +526,9 @@ ul { list-style: none; }
   .auth-page { max-width: 520px; border-radius: 20px; overflow: hidden; margin: 40px auto; min-height: unset; }
 }
 @media (min-width: 1024px) {
-  body { display: flex; align-items: flex-start; justify-content: center; padding: 32px 24px; background: #dde4ee; min-height: 100dvh; }
-  #root { min-height: unset; }
-  .app-shell { max-width: 420px; min-height: calc(100dvh - 64px); border-radius: 32px; overflow: hidden; box-shadow: 0 24px 80px rgba(9,24,41,.32), 0 0 0 1px rgba(26,56,93,.08); }
+  body { display: flex; align-items: flex-start; justify-content: center; padding: 32px 24px; background: #dde4ee; height: auto; overflow: auto; }
+  #root { height: auto; min-height: 100dvh; overflow: visible; }
+  .app-shell { max-width: 420px; height: calc(100dvh - 64px); border-radius: 32px; overflow: hidden; box-shadow: 0 24px 80px rgba(9,24,41,.32), 0 0 0 1px rgba(26,56,93,.08); }
   .top-hdr, .bot-nav { border-radius: 0; max-width: 420px; }
   .fab { right: max(24px, calc(50% - 210px + 16px)); }
   .overlay { max-width: 420px; left: 50%; transform: translateX(-50%); width: 420px; }
