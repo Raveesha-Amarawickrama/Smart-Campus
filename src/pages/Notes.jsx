@@ -63,52 +63,69 @@ export function NotesPage() {
     <div className="page">
       <div className="pg">
         <div className="pg-ttl">Capture Notes</div>
-        <div className="pg-sub" style={{ marginBottom: 10 }}>Photograph and store your handwritten lecture notes.</div>
+        <div className="pg-sub" style={{ marginBottom: 10 }}>
+          Photograph and store your handwritten lecture notes.
+        </div>
 
-   
-        <div className="navy-card" style={{ padding: 20, marginBottom: 18 }}>
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(255,255,255,.12)', border: '1.5px solid rgba(255,255,255,.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon name="camera" size={24} color="#fff" />
+       
+        <div className="navy-card" style={{ padding: 16, marginBottom: 16 }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 46, height: 46, borderRadius: 14, background: 'rgba(255,255,255,.12)', border: '1.5px solid rgba(255,255,255,.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon name="camera" size={22} color="#fff" />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 3 }}>Capture a Note</div>
-              <div style={{ fontSize: 12, opacity: .72, lineHeight: 1.5 }}>Open your camera to photograph handwritten notes and store them by subject.</div>
+              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 2 }}>Capture a Note</div>
+              <div style={{ fontSize: 12, opacity: .72, lineHeight: 1.4 }}>
+                Open camera to photograph handwritten notes and store by subject.
+              </div>
             </div>
           </div>
-          <button className="btn btn-gold" style={{ marginTop: 14, position: 'relative', zIndex: 1 }} onClick={() => setCamOpen(true)}>
+          <button
+            className="btn btn-gold"
+            style={{ marginTop: 12, position: 'relative', zIndex: 1 }}
+            onClick={() => setCamOpen(true)}
+          >
             <Icon name="camera" size={18} color="#fff" /> Open Camera
           </button>
         </div>
 
-    
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-          <div style={{ background: 'rgba(26,56,93,.07)', border: '1.5px solid rgba(26,56,93,.12)', borderRadius: 12, padding: '12px 14px', textAlign: 'center' }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--navy)' }}>{notes.length}</div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+          <div style={{ background: 'rgba(26,56,93,.07)', border: '1.5px solid rgba(26,56,93,.12)', borderRadius: 12, padding: '10px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--navy)' }}>{notes.length}</div>
             <div style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>Total Notes</div>
           </div>
-          <div style={{ background: 'rgba(41,140,189,.08)', border: '1.5px solid rgba(41,140,189,.12)', borderRadius: 12, padding: '12px 14px', textAlign: 'center' }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--teal)' }}>{new Set(notes.map((n) => n.subject)).size}</div>
+          <div style={{ background: 'rgba(41,140,189,.08)', border: '1.5px solid rgba(41,140,189,.12)', borderRadius: 12, padding: '10px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--teal)' }}>
+              {new Set(notes.map((n) => n.subject)).size}
+            </div>
             <div style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>Subjects</div>
           </div>
         </div>
 
-     
-        <div className="finput-wrap" style={{ marginBottom: 12 }}>
+       
+        <div className="finput-wrap" style={{ marginBottom: 10 }}>
           <span className="finput-icon"><Icon name="search" size={17} /></span>
-          <input className="finput" placeholder="Search notes…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input
+            className="finput"
+            placeholder="Search notes…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
 
-
+       
         {subjects.length > 1 && (
-          <div className="chips" style={{ marginBottom: 16 }}>
+          <div className="chips" style={{ marginBottom: 14 }}>
             {subjects.map((s) => (
-              <button key={s} className={`chip ${filter === s ? 'on' : ''}`} onClick={() => setFilter(s)}>{s}</button>
+              <button key={s} className={`chip ${filter === s ? 'on' : ''}`} onClick={() => setFilter(s)}>
+                {s}
+              </button>
             ))}
           </div>
         )}
 
-  
+       
         {!imgReady ? (
           <div className="empty">
             <div className="empty-icon"><Icon name="camera" size={28} color="var(--border2)" /></div>
@@ -118,7 +135,11 @@ export function NotesPage() {
           <div className="empty">
             <div className="empty-icon"><Icon name="camera" size={28} color="var(--border2)" /></div>
             <div className="empty-h">{notes.length === 0 ? 'No notes yet' : 'No results'}</div>
-            <div className="empty-p">{notes.length === 0 ? 'Tap "Open Camera" to capture your first note.' : 'Try a different search or subject filter.'}</div>
+            <div className="empty-p">
+              {notes.length === 0
+                ? 'Tap "Open Camera" to capture your first note.'
+                : 'Try a different search or subject filter.'}
+            </div>
           </div>
         ) : (
           <div className="note-grid">
@@ -143,7 +164,13 @@ export function NotesPage() {
       </div>
 
       {camOpen  && <CameraView onCapture={addNote} onClose={() => setCamOpen(false)} lastThumb={lastThumb} />}
-      {viewNote && <NoteViewer note={viewNote} onDelete={() => deleteNote(viewNote.id)} onClose={() => setViewNote(null)} />}
+      {viewNote && (
+        <NoteViewer
+          note={viewNote}
+          onDelete={() => deleteNote(viewNote.id)}
+          onClose={() => setViewNote(null)}
+        />
+      )}
     </div>
   );
 }
@@ -159,16 +186,16 @@ function CameraView({ onCapture, onClose, lastThumb }) {
   const [error,    setError]    = useState('');
   const [captured, setCaptured] = useState(null);
   const [form,     setForm]     = useState({ title: '', subject: SUBJECTS[0] });
+  const [titleErr, setTitleErr] = useState('');
 
   useEffect(() => {
     startCam();
     return () => stopCam();
   }, []);
 
-  
   const startCam = async () => {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error('Camera API not supported in this browser.');
       }
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -185,11 +212,8 @@ function CameraView({ onCapture, onClose, lastThumb }) {
     }
   };
 
-  const stopCam = () => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-  };
+  const stopCam = () => streamRef.current?.getTracks().forEach((t) => t.stop());
 
-  // Capture frame to canvas (then to base64 JPEG)
   const shoot = () => {
     if (!ready || !videoRef.current) return;
     const cv = canvasRef.current;
@@ -207,102 +231,188 @@ function CameraView({ onCapture, onClose, lastThumb }) {
   const retake = () => {
     setCaptured(null);
     setReady(false);
+    setTitleErr('');
     startCam();
   };
 
   const saveNote = () => {
-    if (!form.title.trim()) return;
-    onCapture({ title: form.title, subject: form.subject, imageData: captured, subjectTag: TAG[form.subject] || 'cs' });
+    if (!form.title.trim()) {
+      setTitleErr('Please enter a note title');
+      return;
+    }
+    onCapture({
+      title: form.title.trim(),
+      subject: form.subject,
+      imageData: captured,
+      subjectTag: TAG[form.subject] || 'cs',
+    });
     onClose();
   };
+
+  
+  if (error) {
+    return (
+      <div className="cam-shell">
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, padding: 32, background: '#111', color: '#fff', textAlign: 'center' }}>
+          <div style={{ width: 80, height: 80, borderRadius: 24, background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="camera" size={36} color="rgba(255,255,255,.3)" />
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 700 }}>Camera Not Available</div>
+          <div style={{ fontSize: 13, opacity: .7, lineHeight: 1.6, maxWidth: 280 }}>{error}</div>
+          <button className="btn btn-glass" style={{ maxWidth: 220 }} onClick={onClose}>
+            <Icon name="back" size={18} color="#fff" /> Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cam-shell">
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
       {!captured ? (
+       
         <>
-          {error ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, padding: 32, background: '#111', color: '#fff', textAlign: 'center' }}>
-              <div style={{ width: 80, height: 80, borderRadius: 24, background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="camera" size={36} color="rgba(255,255,255,.3)" />
-              </div>
-              <div style={{ fontSize: 16, fontWeight: 700 }}>Camera Not Available</div>
-              <div style={{ fontSize: 13, opacity: .7, lineHeight: 1.6, maxWidth: 280 }}>{error}</div>
-              <button className="btn btn-glass" style={{ maxWidth: 220 }} onClick={onClose}>
-                <Icon name="back" size={18} color="#fff" /> Go Back
-              </button>
-            </div>
-          ) : (
-            <>
-              <video ref={videoRef} autoPlay playsInline muted className="cam-video" />
-              {flash && <div style={{ position: 'absolute', inset: 0, background: '#fff', opacity: .75, zIndex: 10, pointerEvents: 'none' }} />}
-              <div className="cam-ov">
-                <div className="cam-top">
-                  <button onClick={onClose} style={{ color: '#fff', minHeight: 44, minWidth: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name="close" size={24} color="#fff" />
-                  </button>
-                  <span style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>Capture Notes</span>
-                  <div style={{ width: 44 }} />
-                </div>
-                <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="cam-frame">
-                    <div className="cam-scan" />
-                    {[
-                      { top: 0, left: 0,     borderTop: '3px solid var(--gold-light)', borderLeft: '3px solid var(--gold-light)' },
-                      { top: 0, right: 0,    borderTop: '3px solid var(--gold-light)', borderRight: '3px solid var(--gold-light)' },
-                      { bottom: 0, left: 0,  borderBottom: '3px solid var(--gold-light)', borderLeft: '3px solid var(--gold-light)' },
-                      { bottom: 0, right: 0, borderBottom: '3px solid var(--gold-light)', borderRight: '3px solid var(--gold-light)' },
-                    ].map((style, i) => (
-                      <div key={i} style={{ position: 'absolute', width: 20, height: 20, ...style }} />
-                    ))}
-                  </div>
-                  <div style={{ position: 'absolute', bottom: 'calc(50% - 52% + 8px)', fontSize: 12, color: 'rgba(255,255,255,.8)', fontWeight: 600 }}>
-                    Align notes within frame
-                  </div>
-                </div>
-                <div className="cam-bot">
-                  <div className="cam-thumb">
-                    {lastThumb && <img src={lastThumb} alt="last" />}
-                  </div>
-                  <button className="cam-shutter" onClick={shoot} disabled={!ready}>
-                    <div style={{ width: 58, height: 58, borderRadius: '50%', background: ready ? '#fff' : 'rgba(255,255,255,.5)', border: '3px solid #ddd' }} />
-                  </button>
-                  <div style={{ width: 54 }} />
-                </div>
-              </div>
-            </>
+          <video ref={videoRef} autoPlay playsInline muted className="cam-video" />
+          {flash && (
+            <div style={{ position: 'absolute', inset: 0, background: '#fff', opacity: .75, zIndex: 10, pointerEvents: 'none' }} />
           )}
+          <div className="cam-ov">
+          
+            <div className="cam-top">
+              <button
+                onClick={onClose}
+                style={{ color: '#fff', minHeight: 48, minWidth: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Icon name="close" size={24} color="#fff" />
+              </button>
+              <span style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>Capture Notes</span>
+              <div style={{ width: 48 }} />
+            </div>
+
+         
+            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="cam-frame">
+                <div className="cam-scan" />
+                {[
+                  { top: 0,    left: 0,  borderTop: '3px solid var(--gold-light)', borderLeft: '3px solid var(--gold-light)' },
+                  { top: 0,    right: 0, borderTop: '3px solid var(--gold-light)', borderRight: '3px solid var(--gold-light)' },
+                  { bottom: 0, left: 0,  borderBottom: '3px solid var(--gold-light)', borderLeft: '3px solid var(--gold-light)' },
+                  { bottom: 0, right: 0, borderBottom: '3px solid var(--gold-light)', borderRight: '3px solid var(--gold-light)' },
+                ].map((s, i) => (
+                  <div key={i} style={{ position: 'absolute', width: 20, height: 20, ...s }} />
+                ))}
+              </div>
+              <div style={{ position: 'absolute', bottom: 'calc(50% - 52% + 8px)', fontSize: 12, color: 'rgba(255,255,255,.8)', fontWeight: 600 }}>
+                Align notes within frame
+              </div>
+            </div>
+
+         
+            <div className="cam-bot">
+              <div className="cam-thumb">
+                {lastThumb && <img src={lastThumb} alt="last" />}
+              </div>
+              <button className="cam-shutter" onClick={shoot} disabled={!ready}>
+                <div style={{ width: 58, height: 58, borderRadius: '50%', background: ready ? '#fff' : 'rgba(255,255,255,.4)', border: '3px solid #ddd' }} />
+              </button>
+              <div style={{ width: 54 }} />
+            </div>
+          </div>
         </>
       ) : (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#000' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16, background: 'rgba(0,0,0,.6)' }}>
-            <button onClick={retake} style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 13, minHeight: 44 }}>
+       
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 500,
+          display: 'flex', flexDirection: 'column',
+          background: '#000',
+          overflowY: 'auto',          /* ✅ scroll the whole preview+form */
+          WebkitOverflowScrolling: 'touch',
+        }}>
+        
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px',
+            background: 'rgba(0,0,0,.85)',
+            position: 'sticky', top: 0, zIndex: 10,   /* stays visible while scrolling */
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={retake}
+              style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 14, minHeight: 48, minWidth: 48 }}
+            >
               <Icon name="back" size={20} color="#fff" /> Retake
             </button>
             <span style={{ color: '#fff', fontWeight: 800, fontSize: 16 }}>Preview</span>
-            <div style={{ width: 70 }} />
+            <button
+              onClick={onClose}
+              style={{ color: 'rgba(255,255,255,.6)', minHeight: 48, minWidth: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Icon name="close" size={20} color="rgba(255,255,255,.6)" />
+            </button>
           </div>
-          <img src={captured} alt="captured" style={{ flex: 1, objectFit: 'contain', width: '100%', background: '#111' }} />
-          <div style={{ background: 'var(--surface)', padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        
+          <div style={{ width: '100%', maxHeight: '45vh', overflow: 'hidden', background: '#111', flexShrink: 0 }}>
+            <img
+              src={captured}
+              alt="captured"
+              style={{ width: '100%', maxHeight: '45vh', objectFit: 'contain', display: 'block' }}
+            />
+          </div>
+
+          
+          <div style={{
+            background: 'var(--surface)',
+            padding: '20px 16px',
+            display: 'flex', flexDirection: 'column', gap: 14,
+            flexShrink: 0,
+            
+            paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+          }}>
+
             <div className="fgrp">
               <label className="flbl">Note Title</label>
               <input
                 className="finput"
                 placeholder="e.g. Advanced Calculus — Oct 24"
                 value={form.title}
-                onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
                 autoFocus
+                onChange={(e) => {
+                  setForm((p) => ({ ...p, title: e.target.value }));
+                  if (e.target.value.trim()) setTitleErr('');
+                }}
               />
+              {titleErr && (
+                <span className="ferr">
+                  <Icon name="warning" size={12} />{titleErr}
+                </span>
+              )}
             </div>
+
             <div className="fgrp">
               <label className="flbl">Subject</label>
-              <select className="finput fselect" value={form.subject} onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}>
+              <select
+                className="finput fselect"
+                value={form.subject}
+                onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
+              >
                 {SUBJECTS.filter(Boolean).map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
-            <button className="btn btn-navy" onClick={saveNote} disabled={!form.title.trim()}>
+
+            {/* Save button — always in DOM, always reachable */}
+            <button
+              className="btn btn-navy"
+              onClick={saveNote}
+              style={{ marginTop: 4 }}
+            >
               <Icon name="save" size={18} color="#fff" /> Save Note
+            </button>
+
+            <button className="btn btn-ghost" onClick={retake}>
+              <Icon name="back" size={18} /> Retake Photo
             </button>
           </div>
         </div>
@@ -311,32 +421,50 @@ function CameraView({ onCapture, onClose, lastThumb }) {
   );
 }
 
+
 function NoteViewer({ note, onDelete, onClose }) {
   const [confirmDel, setConfirmDel] = useState(false);
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="sheet" style={{ maxHeight: '95dvh' }} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-hdr">
-          <span className="sheet-title" style={{ flex: 1, marginRight: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{note.title}</span>
+          <span className="sheet-title" style={{ flex: 1, marginRight: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {note.title}
+          </span>
           <button className="icon-btn" onClick={onClose}><Icon name="close" size={18} /></button>
         </div>
+
         {note.imageData && (
-          <img src={note.imageData} alt={note.title} style={{ width: '100%', maxHeight: '52dvh', objectFit: 'contain', background: '#f0f0f0' }} />
+          <img
+            src={note.imageData}
+            alt={note.title}
+            style={{ width: '100%', maxHeight: '50dvh', objectFit: 'contain', background: '#f0f0f0' }}
+          />
         )}
+
         <div className="sheet-body">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span className={`stag stag-${note.subjectTag || 'cs'}`}>{note.subject}</span>
             <span style={{ fontSize: 12, color: 'var(--t3)' }}>
-              {new Date(note.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              {new Date(note.createdAt).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+              })}
             </span>
           </div>
           <div className="dzone">
-            <div className="dzone-ttl"><Icon name="trash" size={13} color="var(--danger)" />Delete Note</div>
+            <div className="dzone-ttl">
+              <Icon name="trash" size={13} color="var(--danger)" />Delete Note
+            </div>
             {confirmDel ? (
               <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn btn-danger btn-sm" style={{ flex: 1 }} onClick={onDelete}>Confirm Delete</button>
-                <button className="btn btn-ghost btn-sm"  style={{ flex: 1 }} onClick={() => setConfirmDel(false)}>Cancel</button>
+                <button className="btn btn-danger btn-sm" style={{ flex: 1 }} onClick={onDelete}>
+                  Confirm Delete
+                </button>
+                <button className="btn btn-ghost btn-sm" style={{ flex: 1 }} onClick={() => setConfirmDel(false)}>
+                  Cancel
+                </button>
               </div>
             ) : (
               <button className="btn btn-danger btn-sm" onClick={() => setConfirmDel(true)}>

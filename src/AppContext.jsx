@@ -5,25 +5,26 @@ import { DEFAULT_ASSIGNMENTS, DEFAULT_COURSES, DEFAULT_SCHEDULE } from './data/d
 const AppCtx = createContext(null);
 
 export function AppProvider({ children }) {
-  const [user,          setUserState]      = useState(null);
-  const [assignments,   setAssignments]    = useState([]);
-  const [courses,       setCourses]        = useState([]);
-  const [schedule,      setSchedule]       = useState([]);
+  const [user,            setUserState]      = useState(null);
+  const [assignments,     setAssignments]    = useState([]);
+  const [courses,         setCourses]        = useState([]);
+  const [schedule,        setSchedule]       = useState([]);
   const [scheduleLoading, setScheduleLoading] = useState(true);
   const [scheduleError,   setScheduleError]   = useState(null);
-  const [notes,         setNotes]          = useState([]);
-  const [settings,      setSettings]       = useState({ notifications: true, darkMode: false });
-  const [notifications, setNotifications]  = useState([]);
-  const [toasts,        setToasts]         = useState([]);
-  const [page,          setPage]           = useState('landing');
-  const [loading,       setLoading]        = useState(true);
+  const [notes,           setNotes]          = useState([]);
+  const [settings,        setSettings]       = useState({ notifications: true, darkMode: false });
+  const [notifications,   setNotifications]  = useState([]);
+  const [toasts,          setToasts]         = useState([]);
 
+  const [page,            setPage]           = useState('landing');
+  const [loading,         setLoading]        = useState(true);
 
+ 
   useEffect(() => {
     const u = storage.get(KEYS.USER);
     if (u) {
       setUserState(u);
-      setPage('dashboard');
+      
     }
     setAssignments(storage.get(KEYS.ASSIGNMENTS, DEFAULT_ASSIGNMENTS));
     setCourses(storage.get(KEYS.COURSES, DEFAULT_COURSES));
@@ -33,6 +34,7 @@ export function AppProvider({ children }) {
     setLoading(false);
   }, []);
 
+  
   useEffect(() => {
     let cancelled = false;
 
@@ -61,7 +63,7 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, []);
 
-
+  
   const saveUser = useCallback((u) => {
     storage.set(KEYS.USER, u);
     setUserState(u);
@@ -106,14 +108,13 @@ export function AppProvider({ children }) {
     });
   }, []);
 
-
   const toast = useCallback((msg, type = 'info') => {
     const id = Date.now();
     setToasts((p) => [...p, { id, msg, type }]);
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }, []);
 
-
+ 
   useEffect(() => {
     if (!user || !settings.notifications) return;
     if (!('Notification' in window)) return;
@@ -147,7 +148,6 @@ export function AppProvider({ children }) {
     return () => clearInterval(interval);
   }, [user, assignments, settings.notifications]);
 
- 
   const logout = useCallback(() => {
     storage.remove(KEYS.USER);
     setUserState(null);
