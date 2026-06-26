@@ -1,98 +1,74 @@
-
-
-const DB_NAME = 'smart-campus-db';
+const DB_NAME    = 'smart-campus-db';
 const DB_VERSION = 1;
-const STORE_NAME = 'note-images';
+const STORE      = 'note-images';
 
-let dbPromise = null;
+let _db = null;
 
 function openDB() {
-  if (dbPromise) return dbPromise;
+  if (_db) return Promise.resolve(_db);
 
-  dbPromise = new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) {
-      reject(new Error('IndexedDB not supported in this browser'));
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error('IndexedDB not supported'));
       return;
     }
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
 
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE, { keyPath: 'id' });
       }
     };
 
-    request.onsuccess = (event) => resolve(event.target.result);
-    request.onerror = (event) => reject(event.target.error);
+    req.onsuccess = (e) => { _db = e.target.result; resolve(_db); };
+    req.onerror   = (e) => reject(e.target.error);
   });
-
-  return dbPromise;
 }
-
 
 export async function saveImage(noteId, imageData) {
   try {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).put({ id: noteId, imageData, savedAt: Date.now() });
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).put({ id: noteId, imageData, savedAt: Date.now() });
       tx.oncomplete = () => resolve(true);
-      tx.onerror = () => reject(tx.error);
+      tx.onerror    = () => reject(tx.error);
     });
   } catch (err) {
-    console.warn('[IndexedDB] saveImage failed, image will be unavailable:', err.message);
+    console.warn('[IndexedDB] saveImage failed:', err.message);
     return false;
   }
 }
-
-
-export async function getImage(noteId) {
-  try {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');
-      const req = tx.objectStore(STORE_NAME).get(noteId);
-      req.onsuccess = () => resolve(req.result?.imageData ?? null);
-      req.onerror = () => reject(req.error);
-    });
-  } catch (err) {
-    return null;
-  }
-}
-
 
 export async function getAllImages() {
   try {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');
-      const req = tx.objectStore(STORE_NAME).getAll();
+      const tx  = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).getAll();
       req.onsuccess = () => {
         const map = {};
-        (req.result || []).forEach(row => { map[row.id] = row.imageData; });
+        (req.result || []).forEach((row) => { map[row.id] = row.imageData; });
         resolve(map);
       };
       req.onerror = () => reject(req.error);
     });
-  } catch (err) {
+  } catch {
     return {};
   }
 }
-
 
 export async function deleteImage(noteId) {
   try {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).delete(noteId);
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).delete(noteId);
       tx.oncomplete = () => resolve(true);
-      tx.onerror = () => reject(tx.error);
+      tx.onerror    = () => reject(tx.error);
     });
-  } catch (err) {
+  } catch {
     return false;
   }
 }

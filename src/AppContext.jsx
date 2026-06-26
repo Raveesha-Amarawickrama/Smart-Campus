@@ -5,18 +5,19 @@ import { DEFAULT_ASSIGNMENTS, DEFAULT_COURSES, DEFAULT_SCHEDULE } from './data/d
 const AppCtx = createContext(null);
 
 export function AppProvider({ children }) {
-  const [user,        setUserState]   = useState(null);
-  const [assignments, setAssignments] = useState([]);
-  const [courses,     setCourses]     = useState([]);
-  const [schedule,    setSchedule]    = useState([]);
+  const [user,          setUserState]      = useState(null);
+  const [assignments,   setAssignments]    = useState([]);
+  const [courses,       setCourses]        = useState([]);
+  const [schedule,      setSchedule]       = useState([]);
   const [scheduleLoading, setScheduleLoading] = useState(true);
   const [scheduleError,   setScheduleError]   = useState(null);
-  const [notes,       setNotes]       = useState([]);
-  const [settings,    setSettings]    = useState({ notifications: true, darkMode: false, language: 'en' });
-  const [notifications, setNotifications] = useState([]);
-  const [toasts,      setToasts]      = useState([]);
-  const [page,        setPage]        = useState('landing');
-  const [loading,     setLoading]     = useState(true);
+  const [notes,         setNotes]          = useState([]);
+  const [settings,      setSettings]       = useState({ notifications: true, darkMode: false });
+  const [notifications, setNotifications]  = useState([]);
+  const [toasts,        setToasts]         = useState([]);
+  const [page,          setPage]           = useState('landing');
+  const [loading,       setLoading]        = useState(true);
+
 
   useEffect(() => {
     const u = storage.get(KEYS.USER);
@@ -34,26 +35,28 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     let cancelled = false;
-    const loadSchedule = async () => {
+
+    async function loadSchedule() {
       setScheduleLoading(true);
       setScheduleError(null);
       try {
         const res = await fetch('/data/schedule.json');
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (cancelled) return;
         setSchedule(data);
-        storage.set(KEYS.SCHEDULE, data); 
+        storage.set(KEYS.SCHEDULE, data);
       } catch (err) {
         if (cancelled) return;
-        console.error('Failed to load schedule:', err);
+        console.warn('[Schedule] Fetch failed, using cached/default data:', err.message);
         const cached = storage.get(KEYS.SCHEDULE, DEFAULT_SCHEDULE);
         setSchedule(cached);
         setScheduleError('Could not refresh schedule — showing saved data.');
       } finally {
         if (!cancelled) setScheduleLoading(false);
       }
-    };
+    }
+
     loadSchedule();
     return () => { cancelled = true; };
   }, []);
@@ -85,16 +88,19 @@ export function AppProvider({ children }) {
   }, []);
 
   const addNotification = useCallback((n) => {
-    setNotifications(prev => {
-      const updated = [{ ...n, id: Date.now(), read: false, time: new Date().toISOString() }, ...prev].slice(0, 20);
+    setNotifications((prev) => {
+      const updated = [
+        { ...n, id: Date.now(), read: false, time: new Date().toISOString() },
+        ...prev,
+      ].slice(0, 20);
       storage.set(KEYS.NOTIFS, updated);
       return updated;
     });
   }, []);
 
   const markNotifsRead = useCallback(() => {
-    setNotifications(prev => {
-      const updated = prev.map(n => ({ ...n, read: true }));
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
       storage.set(KEYS.NOTIFS, updated);
       return updated;
     });
@@ -103,47 +109,45 @@ export function AppProvider({ children }) {
 
   const toast = useCallback((msg, type = 'info') => {
     const id = Date.now();
-    setToasts(p => [...p, { id, msg, type }]);
-    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3000);
+    setToasts((p) => [...p, { id, msg, type }]);
+    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }, []);
 
- 
+
   useEffect(() => {
     if (!user || !settings.notifications) return;
+    if (!('Notification' in window)) return;
+
     const check = () => {
-      const notifiedToday = storage.get(KEYS.NOTIFIED_TODAY, {});
       const todayKey = new Date().toISOString().split('T')[0];
+      const notifiedToday = storage.get(KEYS.NOTIFIED_TODAY, {});
       const alreadyNotified = notifiedToday[todayKey] || [];
-
       let updated = false;
-      assignments.forEach(a => {
-        if (a.completed) return;
-        if (alreadyNotified.includes(a.id)) return; 
 
-        const due = new Date(a.dueDate + 'T23:59:00');
-        const diff = (due - new Date()) / 36e5;
-        if (diff > 0 && diff < 24) {
-          if (Notification.permission === 'granted') {
-            new Notification('📚 Smart Campus', {
-              body: `"${a.title}" is due in ${Math.round(diff)} hours!`,
-              icon: '/icon-192.png',
-            });
-            alreadyNotified.push(a.id);
-            updated = true;
-          }
+      assignments.forEach((a) => {
+        if (a.completed || alreadyNotified.includes(a.id)) return;
+        const diff = (new Date(a.dueDate + 'T23:59:00') - new Date()) / 36e5;
+        if (diff > 0 && diff < 24 && Notification.permission === 'granted') {
+          new Notification('📚 Smart Campus', {
+            body: `"${a.title}" is due in ${Math.round(diff)} hours!`,
+            icon: '/icon-192.png',
+          });
+          alreadyNotified.push(a.id);
+          updated = true;
         }
       });
 
       if (updated) {
-       
         storage.set(KEYS.NOTIFIED_TODAY, { [todayKey]: alreadyNotified });
       }
     };
+
     check();
     const interval = setInterval(check, 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, [user, assignments, settings.notifications]);
 
+ 
   const logout = useCallback(() => {
     storage.remove(KEYS.USER);
     setUserState(null);

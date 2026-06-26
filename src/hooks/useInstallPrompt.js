@@ -1,45 +1,78 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 
 export function useInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  
+  const promptRef = useRef(null);
+
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstalled,   setIsInstalled]   = useState(false);
+  const [isIOS,         setIsIOS]         = useState(false);
 
   useEffect(() => {
    
-    const standalone =
-      window.matchMedia?.('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true;
+    const standaloneMedia = window.matchMedia?.('(display-mode: standalone)');
+    const alreadyInstalled =
+      standaloneMedia?.matches ||
+      window.navigator.standalone === true; 
 
-    const onBeforeInstallPrompt = (e) => {
-      e.preventDefault();           
-      setDeferredPrompt(e);         
+    if (alreadyInstalled) {
+      setIsInstalled(true);
+      return;
+    }
+
+
+    const ua = navigator.userAgent;
+    const iosDevice = /iphone|ipad|ipod/i.test(ua);
+    const safari    = /safari/i.test(ua) && !/chrome|crios|fxios/i.test(ua);
+    if (iosDevice && safari) {
+      setIsIOS(true);
+      setIsInstallable(true); 
+      return;
+    }
+
+    const onBeforeInstall = (e) => {
+      e.preventDefault();          
+      promptRef.current = e;       
       setIsInstallable(true);
     };
 
-    const onAppInstalled = () => {
+    const onInstalled = () => {
+      promptRef.current = null;
       setIsInstalled(true);
       setIsInstallable(false);
-      setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-    window.addEventListener('appinstalled', onAppInstalled);
+    const onModeChange = (mq) => {
+      if (mq.matches) {
+        setIsInstalled(true);
+        setIsInstallable(false);
+      }
+    };
+
+    window.addEventListener('beforeinstallprompt', onBeforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    standaloneMedia?.addEventListener('change', onModeChange);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', onAppInstalled);
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      window.removeEventListener('appinstalled', onInstalled);
+      standaloneMedia?.removeEventListener('change', onModeChange);
     };
   }, []);
 
-  const promptInstall = useCallback(async () => {
-    if (!deferredPrompt) return { outcome: 'unavailable' };
-    deferredPrompt.prompt();                      
-    const choice = await deferredPrompt.userChoice; 
-    setDeferredPrompt(null);
-    setIsInstallable(false);
-    return choice;
-  }, [deferredPrompt]);
 
-  return { isInstallable, isInstalled, promptInstall };
+  const promptInstall = useCallback(async () => {
+    if (isIOS) return { outcome: 'ios' };
+    if (!promptRef.current) return { outcome: 'unavailable' };
+
+    promptRef.current.prompt();
+    const choice = await promptRef.current.userChoice;
+    promptRef.current = null;
+    setIsInstallable(false);
+    if (choice.outcome === 'accepted') setIsInstalled(true);
+    return choice;
+  }, [isIOS]);
+
+  return { isInstallable, isInstalled, isIOS, promptInstall };
 }
