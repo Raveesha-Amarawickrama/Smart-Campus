@@ -138,7 +138,7 @@ export function LandingPage() {
           <div className="lp-author">
             <div className="lp-author-av">R</div>
             <div>
-              <div className="lp-author-name">Rasadi Sanchala</div>
+              <div className="lp-author-name">Raveesha Amarawickrama</div>
               <div className="lp-author-sub">Software Engineering, University of Kelaniya</div>
             </div>
           </div>

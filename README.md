@@ -79,10 +79,10 @@ This satisfies the rubric's explicit mention of *both* named storage technologie
 
 | Browser | Support |
 |---|---|
-| Chrome 90+ | ✅ Full |
-| Firefox 88+ | ✅ Full |
-| Safari 15+ | ✅ Full (Camera requires HTTPS or localhost) |
-| Edge 90+ | ✅ Full |
+| Chrome 90+ | Full |
+| Firefox 88+ | Full |
+| Safari 15+ | Full (Camera requires HTTPS or localhost) |
+| Edge 90+ |  Full |
 
 > **Note:** The Camera API requires either `localhost` or an HTTPS connection. On HTTP in production, the camera button will display an appropriate error message.
 

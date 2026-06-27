@@ -4,7 +4,6 @@ import { DEFAULT_ASSIGNMENTS, DEFAULT_COURSES, DEFAULT_SCHEDULE } from './data/d
 
 const AppCtx = createContext(null);
 
-// ── helpers ──────────────────────────────────────────────────────────────────
 const safeArray = (val, fallback) => (Array.isArray(val) ? val : fallback);
 
 export function AppProvider({ children }) {
@@ -21,12 +20,11 @@ export function AppProvider({ children }) {
   const [page,            setPage]            = useState('landing');
   const [loading,         setLoading]         = useState(true);
 
-  // ── bootstrap from localStorage ──────────────────────────────────────────
+ 
   useEffect(() => {
     const u = storage.get(KEYS.USER);
     if (u) setUserState(u);
 
-    // safeArray ensures a corrupt/null stored value never replaces the default
     setAssignments(safeArray(storage.get(KEYS.ASSIGNMENTS), DEFAULT_ASSIGNMENTS));
     setCourses    (safeArray(storage.get(KEYS.COURSES),     DEFAULT_COURSES));
     setNotes      (safeArray(storage.get(KEYS.NOTES),       []));
@@ -40,7 +38,7 @@ export function AppProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // ── schedule fetch ────────────────────────────────────────────────────────
+
   useEffect(() => {
     let cancelled = false;
 
@@ -68,7 +66,7 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, []);
 
-  // ── save helpers ──────────────────────────────────────────────────────────
+
   const saveUser = useCallback((u) => {
     storage.set(KEYS.USER, u);
     setUserState(u);
@@ -119,7 +117,6 @@ export function AppProvider({ children }) {
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }, []);
 
-  // ── push notifications ────────────────────────────────────────────────────
   useEffect(() => {
     if (!user || !settings.notifications) return;
     if (!('Notification' in window)) return;
@@ -153,7 +150,6 @@ export function AppProvider({ children }) {
     return () => clearInterval(interval);
   }, [user, assignments, settings.notifications]);
 
-  // ── logout ────────────────────────────────────────────────────────────────
   const logout = useCallback(() => {
     storage.remove(KEYS.USER);
     setUserState(null);

@@ -51,8 +51,7 @@ ul { list-style: none; }
 
 .app-shell {
   display: flex; flex-direction: column;
-  /* width:100% is critical — without it, margin:0 auto inside a flex-column
-     parent overrides align-self:stretch, shrinking the shell to content width */
+
   width: 100%; max-width: 430px;
   height: 100dvh; margin: 0 auto;
   background: var(--bg); position: relative; overflow: hidden;

@@ -335,7 +335,7 @@ function CameraView({ onCapture, onClose, lastThumb }) {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '12px 16px',
             background: 'rgba(0,0,0,.85)',
-            position: 'sticky', top: 0, zIndex: 10,   /* stays visible while scrolling */
+            position: 'sticky', top: 0, zIndex: 10,   
             flexShrink: 0,
           }}>
             <button
@@ -402,7 +402,7 @@ function CameraView({ onCapture, onClose, lastThumb }) {
               </select>
             </div>
 
-            {/* Save button — always in DOM, always reachable */}
+     
             <button
               className="btn btn-navy"
               onClick={saveNote}

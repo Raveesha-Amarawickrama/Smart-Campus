@@ -36,10 +36,10 @@ function Donut({ pct, size = 82, stroke = 8 }) {
 }
 
 export function CreditsPage() {
-  // ← destructuring default: even if context gives undefined, we get []
+
   const { courses: rawCourses = [], saveCourses, toast } = useApp();
 
-  // ← runtime guard: ensure it's always an array, never null/undefined
+
   const courses = Array.isArray(rawCourses) ? rawCourses : [];
 
   const [modal,   setModal]   = useState(null);
@@ -142,7 +142,6 @@ export function CreditsPage() {
           </div>
         </div>
 
-        {/* Course History */}
         <div className="sec-hd" style={{ marginTop: 16 }}>
           <span className="sec-ttl">Course History</span>
           <button className="sec-act" onClick={() => setAddSem(true)}>+ Semester</button>
